@@ -1,10 +1,10 @@
-import { useState } from "react";
-import {accurateInterval} from 'accurate-interval';
-import "./App.css";
+import { useEffect, useState } from 'react';
+import { accurateInterval } from 'accurate-interval';
+import './App.css';
 
 function App() {
   const BREAK_TIME = 5,
-    SESSION_TIME = 1,
+    SESSION_TIME = 25,
     PAUSE = 0,
     PLAY = 1,
     TYPE_SESSION = 10,
@@ -14,36 +14,10 @@ function App() {
     sessionType: TYPE_SESSION,
     sessionTime: SESSION_TIME,
     breakTime: BREAK_TIME,
-    timeLeft: SESSION_TIME * 60,
-    intervalId: 0,
   };
   const [timerState, setTimerState] = useState(initState);
-
-  const handleReset = () => {
-    if (timerState.intervalId !== 0) {
-      timerState.intervalId.clear();
-      setTimerState(initState);
-    } else {
-      setTimerState(initState);
-    }
-  };
-
-  /**
-   *
-   * @param {number} time
-   * @returns :string mm:ss
-   */
-  const timeDisplay = (time) => {
-    const date = new Date(0);
-    date.setSeconds(time);
-    let dateFormat = date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
-    dateFormat = dateFormat.split(":");
-    return dateFormat[0] == "02" ? "60:00" : dateFormat.slice(1).join(":");
-  };
+  const [timeLeft, setTimeLeft] = useState(SESSION_TIME * 60);
+  const [intervalId, setIntervalId] = useState();
 
   /**
    * Manejador de la duración de la 'session' y 'break', limitando el timepo a minimo 1 y máximo 60.
@@ -58,10 +32,24 @@ function App() {
           setTimerState({ ...timerState, breakTime: time });
           break;
         case TYPE_SESSION:
-          setTimerState({ ...timerState, sessionTime: time });
-          setTimerState({ ...timerState, timeLeft: time * 60 });
+          setTimerState({
+            ...timerState,
+            sessionTime: time,
+          });
+          setTimeLeft(time * 60);
           break;
       }
+    }
+  };
+
+  const handleReset = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      setTimerState(initState);
+      setTimeLeft(SESSION_TIME * 60);
+    } else {
+      setTimerState(initState);
+      setTimeLeft(SESSION_TIME * 60);
     }
   };
 
@@ -70,30 +58,70 @@ function App() {
    */
   const handlePlayPause = () => {
     if (timerState.status === PAUSE) {
-      countDown(timerState.timeLeft);
-      setTimerState({ ...timerState, status: PLAY });
+      countDown();
+      setTimerState({
+        ...timerState,
+        status: PLAY,
+      });
     } else {
-      clearInterval(timerState.intervalId);
+      clearInterval(intervalId);
       setTimerState({ ...timerState, status: PAUSE });
     }
   };
 
   const countDown = () => {
-    setTimerState({
-      ...timerState,
-      intervalId: accurateInterval(() => {
-        decrementTime();
+    setIntervalId(
+      setInterval(() => {
+        setTimeLeft((timeLeft) => timeLeft - 1);
       }, 1000)
-    });
+    );    
   };
 
-  const decrementTime = () => {
-    setTimerState({ ...timerState, timeLeft: (timerState.timeLeft - 1) });
+  useEffect(() => {
+    control();
+  }, [timeLeft]);
+
+  const control = () => {
+    if (timeLeft < 0) {
+      changeSessionBreak();
+      countDown();
+    }
+  };
+
+  const changeSessionBreak = () => {
+    clearInterval(intervalId);
+    setTimerState({
+      ...timerState,
+      sessionType:
+        timerState.sessionType === TYPE_SESSION ? TYPE_BREAK : TYPE_SESSION,
+    });
+    setTimeLeft(
+      timerState.sessionType === TYPE_SESSION
+        ? timerState.breakTime * 60
+        : timerState.sessionTime * 60
+    );
+  };
+
+  /**
+   *
+   * @param {number} time
+   * @returns :string mm:ss
+   */
+  const timeDisplay = (time) => {
+    const date = new Date(0);
+    date.setSeconds(time);
+    let dateFormat = date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+    dateFormat = dateFormat.split(':');
+    return dateFormat[0] === '02' ? '60:00' : dateFormat.slice(1).join(':');
   };
 
   return (
     <>
-      <h1 className="title">Promodoro Clock</h1>
+      <h1 className="title">Pomodoro Clock</h1>
 
       <div className="container-break-session">
         <div className="break-container">
@@ -155,8 +183,10 @@ function App() {
         </div>
 
         <div className="clock-container">
-          <div id="timer-label">Session</div>
-          <div id="time-left">{timeDisplay(timerState.timeLeft)}</div>
+          <div id="timer-label">
+            {timerState.sessionType === TYPE_SESSION ? 'Session' : 'Break'}
+          </div>
+          <div id="time-left">{timeDisplay(timeLeft)}</div>
           <button id="start_stop" onClick={handlePlayPause}>
             <i className="fa-solid fa-circle-play"></i>
             <i className="fa-solid fa-circle-pause"></i>
