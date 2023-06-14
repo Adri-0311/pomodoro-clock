@@ -18,7 +18,7 @@ function App() {
   const [timerState, setTimerState] = useState(initState);
   const [timeLeft, setTimeLeft] = useState(SESSION_TIME * 60);
   const [intervalId, setIntervalId] = useState();
-  const audioAlarm = document.getElementById('beep');
+  const audioAlarm = useRef(null);
 
   /**
    * Manejador de la duración de la 'session' y 'break', limitando el timepo a minimo 1 y máximo 60.
@@ -48,8 +48,8 @@ function App() {
       clearInterval(intervalId);
       setTimerState(initState);
       setTimeLeft(SESSION_TIME * 60);
-      audioAlarm.pause();
-      audioAlarm.currentTime = 0;
+      audioAlarm.current.pause();
+      audioAlarm.current.currentTime = 0;
     } else {
       setTimerState(initState);
       setTimeLeft(SESSION_TIME * 60);
@@ -87,7 +87,7 @@ function App() {
   const control = () => {
     if (timeLeft < 0) {
       changeSessionBreak();
-      audioAlarm.play();
+      audioAlarm.current.play();
       countDown();
     }
   };
@@ -202,7 +202,7 @@ function App() {
             id="beep"
             src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
             preload="auto"
-            // ref={audioAlarm}
+            ref={audioAlarm}
           ></audio>
         </div>
       </div>
