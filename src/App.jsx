@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { accurateInterval } from 'accurate-interval';
 import './App.css';
 
@@ -18,6 +18,7 @@ function App() {
   const [timerState, setTimerState] = useState(initState);
   const [timeLeft, setTimeLeft] = useState(SESSION_TIME * 60);
   const [intervalId, setIntervalId] = useState();
+  const audioAlarm = document.getElementById('beep');
 
   /**
    * Manejador de la duración de la 'session' y 'break', limitando el timepo a minimo 1 y máximo 60.
@@ -47,6 +48,8 @@ function App() {
       clearInterval(intervalId);
       setTimerState(initState);
       setTimeLeft(SESSION_TIME * 60);
+      audioAlarm.pause();
+      audioAlarm.currentTime = 0;
     } else {
       setTimerState(initState);
       setTimeLeft(SESSION_TIME * 60);
@@ -74,7 +77,7 @@ function App() {
       setInterval(() => {
         setTimeLeft((timeLeft) => timeLeft - 1);
       }, 1000)
-    );    
+    );
   };
 
   useEffect(() => {
@@ -84,6 +87,7 @@ function App() {
   const control = () => {
     if (timeLeft < 0) {
       changeSessionBreak();
+      audioAlarm.play();
       countDown();
     }
   };
@@ -194,6 +198,12 @@ function App() {
           <button id="reset" onClick={handleReset}>
             <i className="fa-solid fa-rotate"></i>
           </button>
+          <audio
+            id="beep"
+            src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
+            preload="auto"
+            // ref={audioAlarm}
+          ></audio>
         </div>
       </div>
     </>
