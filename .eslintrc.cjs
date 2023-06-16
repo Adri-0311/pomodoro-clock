@@ -11,7 +11,7 @@ module.exports = {
   plugins: ['react-refresh'],
   rules: {
     'react-refresh/only-export-components': 'warn',
-    'react/forbid-prop-types': true,
+    'react/forbid-prop-types': [true],
     semi: ['error', 'always'],
     quotes: ['error', 'single', { 'avoidEscape': true }],
   },

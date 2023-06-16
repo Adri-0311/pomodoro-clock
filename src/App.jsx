@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { accurateInterval } from 'accurate-interval';
-import './App.css';
+import { useEffect, useRef, useState } from "react";
+import ButtonUpDown from "./components/ButtonUpDown.jsx";
+import Clock from "./components/Clock.jsx";
+import "./App.css";
 
 function App() {
   const BREAK_TIME = 5,
@@ -115,12 +116,12 @@ function App() {
     const date = new Date(0);
     date.setSeconds(time);
     let dateFormat = date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
     });
-    dateFormat = dateFormat.split(':');
-    return dateFormat[0] === '02' ? '60:00' : dateFormat.slice(1).join(':');
+    dateFormat = dateFormat.split(":");
+    return dateFormat[0] === "02" ? "60:00" : dateFormat.slice(1).join(":");
   };
 
   return (
@@ -128,84 +129,63 @@ function App() {
       <h1 className="title">Pomodoro Clock</h1>
 
       <div className="container-break-session">
+        <Clock
+          sessionType={timerState.sessionType}
+          typeSession={TYPE_SESSION}
+          timeDisplay={timeDisplay(timeLeft)}
+          handlePlayPause={handlePlayPause}
+          handleReset={handleReset}
+          audioAlarm={audioAlarm}
+        />
+
         <div className="break-container">
-          <div id="break-label">Break Length</div>
-          <button
+          <div id="break-label" className="label">
+            Break Length
+          </div>
+          <ButtonUpDown
             id="break-decrement"
-            onClick={() =>
-              handleLength({
-                time: timerState.breakTime,
-                value: -1,
-                type: TYPE_BREAK,
-              })
-            }
-          >
-            <i className="fa-solid fa-circle-arrow-down"></i>
-          </button>
+            handleLength={handleLength}
+            params={{ time: timerState.breakTime, value: -1, type: TYPE_BREAK }}
+            isUp={false}
+          />
           <span id="break-length">{timerState.breakTime}</span>
-          <button
+          <ButtonUpDown
             id="break-increment"
-            onClick={() =>
-              handleLength({
-                time: timerState.breakTime,
-                value: 1,
-                type: TYPE_BREAK,
-              })
-            }
-          >
-            <i className="fa-solid fa-circle-arrow-up"></i>
-          </button>
+            handleLength={handleLength}
+            params={{ time: timerState.breakTime, value: 1, type: TYPE_BREAK }}
+            isUp={true}
+          />
         </div>
 
         <div className="session-container">
-          <div id="session-label">Session Length</div>
-          <button
-            id="session-decrement"
-            onClick={() =>
-              handleLength({
-                time: timerState.sessionTime,
-                value: -1,
-                type: TYPE_SESSION,
-              })
-            }
-          >
-            <i className="fa-solid fa-circle-arrow-down"></i>
-          </button>
-          <span id="session-length">{timerState.sessionTime}</span>
-          <button
-            id="session-increment"
-            onClick={() =>
-              handleLength({
-                time: timerState.sessionTime,
-                value: 1,
-                type: TYPE_SESSION,
-              })
-            }
-          >
-            <i className="fa-solid fa-circle-arrow-up"></i>
-          </button>
-        </div>
-
-        <div className="clock-container">
-          <div id="timer-label">
-            {timerState.sessionType === TYPE_SESSION ? 'Session' : 'Break'}
+          <div id="session-label" className="label">
+            Session Length
           </div>
-          <div id="time-left">{timeDisplay(timeLeft)}</div>
-          <button id="start_stop" onClick={handlePlayPause}>
-            <i className="fa-solid fa-circle-play"></i>
-            <i className="fa-solid fa-circle-pause"></i>
-          </button>
-          <button id="reset" onClick={handleReset}>
-            <i className="fa-solid fa-rotate"></i>
-          </button>
-          <audio
-            id="beep"
-            src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
-            preload="auto"
-            ref={audioAlarm}
-          ></audio>
+          <ButtonUpDown
+            id="session-decrement"
+            handleLength={handleLength}
+            params={{
+              time: timerState.sessionTime,
+              value: -1,
+              type: TYPE_SESSION,
+            }}
+            isUp={false}
+          />
+          <span id="session-length">{timerState.sessionTime}</span>
+          <ButtonUpDown
+            id="session-increment"
+            handleLength={handleLength}
+            params={{
+              time: timerState.sessionTime,
+              value: 1,
+              type: TYPE_SESSION,
+            }}
+            isUp={true}
+          />
         </div>
       </div>
+
+      <a href="https://github.com/Adri-0311/pomodoro-clock" className="github"><i class="fa-brands fa-github"></i></a>
     </>
   );
 }
