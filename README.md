@@ -1,4 +1,4 @@
-# markdown-previewer
+# pomodoro-clock
 
 Install dependencies:
 
