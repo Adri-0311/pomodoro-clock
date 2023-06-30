@@ -128,9 +128,9 @@ function App() {
 
   return (
     <>
-      <h1 className="title">Pomodoro Clock</h1>
+      <h1 className='title'>Pomodoro Clock</h1>
 
-      <div className="container-break-session">
+      <div className='container-break-session'>
         <Clock
           timerState={timerState}
           sessionType={timerState.sessionType}
@@ -141,31 +141,31 @@ function App() {
           timeLeft={timeLeft}
         />
 
-        <div className="break-container">
-          <div id="break-label" className="label">
+        <div className='break-container'>
+          <div id='break-label' className='label'>
             Break Length
           </div>
           <ButtonUpDown
-            id="break-decrement"
+            id='break-decrement'
             handleLength={handleLength}
             params={{ time: timerState.breakTime, value: -1, type: TYPE_BREAK }}
             isUp={false}
           />
-          <span id="break-length">{timerState.breakTime}</span>
+          <span id='break-length'>{timerState.breakTime}</span>
           <ButtonUpDown
-            id="break-increment"
+            id='break-increment'
             handleLength={handleLength}
             params={{ time: timerState.breakTime, value: 1, type: TYPE_BREAK }}
             isUp={true}
           />
         </div>
 
-        <div className="session-container">
-          <div id="session-label" className="label">
+        <div className='session-container'>
+          <div id='session-label' className='label'>
             Session Length
           </div>
           <ButtonUpDown
-            id="session-decrement"
+            id='session-decrement'
             handleLength={handleLength}
             params={{
               time: timerState.sessionTime,
@@ -174,9 +174,9 @@ function App() {
             }}
             isUp={false}
           />
-          <span id="session-length">{timerState.sessionTime}</span>
+          <span id='session-length'>{timerState.sessionTime}</span>
           <ButtonUpDown
-            id="session-increment"
+            id='session-increment'
             handleLength={handleLength}
             params={{
               time: timerState.sessionTime,
@@ -188,15 +188,15 @@ function App() {
         </div>
       </div>
 
-      <p className="text-center">
+      <p className='text-center'>
         Original app:&nbsp;
-        <a href="https://25--5-clock.freecodecamp.rocks/" target="_balank">
+        <a href='https://25--5-clock.freecodecamp.rocks/' target='_balank'>
           FCC : 25 + 5 Clock
         </a>
       </p>
 
-      <a href="https://github.com/Adri-0311/pomodoro-clock" className="github">
-        <i className="fa-brands fa-github"></i>
+      <a href='https://github.com/Adri-0311/pomodoro-clock' className='github'>
+        <i className='fa-brands fa-github'></i>
       </a>
     </>
   );
