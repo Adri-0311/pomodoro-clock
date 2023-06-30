@@ -1,24 +1,41 @@
-import "../css/Clock.css";
+import '../css/Clock.css';
+import { TYPE_SESSION } from '../constants/const';
+import ProgressBar from './ProgressBar';
 
-export default function Clock(props) {
+export default function Clock({
+  timerState,
+  sessionType,
+  timeDisplay,
+  handlePlayPause,
+  handleReset,
+  audioAlarm,
+  timeLeft,
+}) {
   return (
-    <div className="clock-container">
-      <div id="timer-label">
-        {props.sessionType === props.typeSession ? "Session" : "Break"}
+    <div className='clock-container'>
+      <div id='timer-label'>
+        {sessionType === TYPE_SESSION ? 'Session' : 'Break'}
       </div>
-      <div id="time-left">{props.timeDisplay}</div>
-      <button id="start_stop" onClick={props.handlePlayPause}>
-        <i className="fa-solid fa-circle-play"></i>
-        <i className="fa-solid fa-circle-pause"></i>
+      <div id='time-left'>{timeDisplay}</div>
+      <ProgressBar
+        timeLeft={timeLeft}
+        status={timerState.status}
+        sessionType={timerState.sessionType}
+        sessionTime={timerState.sessionTime}
+        breakTime={timerState.breakTime}
+      />
+      <button id='start_stop' onClick={handlePlayPause}>
+        <i className='fa-solid fa-circle-play'></i>
+        <i className='fa-solid fa-circle-pause'></i>
       </button>
-      <button id="reset" onClick={props.handleReset}>
-        <i className="fa-solid fa-rotate"></i>
+      <button id='reset' onClick={handleReset}>
+        <i className='fa-solid fa-rotate'></i>
       </button>
       <audio
-        id="beep"
-        src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"
-        preload="auto"
-        ref={props.audioAlarm}
+        id='beep'
+        src='https://actions.google.com/sounds/v1/alarms/beep_short.ogg'
+        preload='auto'
+        ref={audioAlarm}
       ></audio>
     </div>
   );

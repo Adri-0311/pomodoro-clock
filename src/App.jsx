@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from "react";
-import ButtonUpDown from "./components/ButtonUpDown.jsx";
-import Clock from "./components/Clock.jsx";
-import "./App.css";
+import { useEffect, useRef, useState } from 'react';
+import {
+  BREAK_TIME,
+  SESSION_TIME,
+  PAUSE,
+  PLAY,
+  TYPE_SESSION,
+  TYPE_BREAK,
+} from './constants/const';
+import ButtonUpDown from './components/ButtonUpDown.jsx';
+import Clock from './components/Clock.jsx';
+import './App.css';
 
 function App() {
-  const BREAK_TIME = 5,
-    SESSION_TIME = 25,
-    PAUSE = 0,
-    PLAY = 1,
-    TYPE_SESSION = 10,
-    TYPE_BREAK = 11;
   const initState = {
     status: PAUSE,
     sessionType: TYPE_SESSION,
@@ -86,7 +88,7 @@ function App() {
   }, [timeLeft]);
 
   const control = () => {
-    if (timeLeft < 0) {
+    if (timeLeft <= 0) {
       changeSessionBreak();
       audioAlarm.current.play();
       countDown();
@@ -116,53 +118,54 @@ function App() {
     const date = new Date(0);
     date.setSeconds(time);
     let dateFormat = date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
     });
-    dateFormat = dateFormat.split(":");
-    return dateFormat[0] === "02" ? "60:00" : dateFormat.slice(1).join(":");
+    dateFormat = dateFormat.split(':');
+    return dateFormat[0] === '02' ? '60:00' : dateFormat.slice(1).join(':');
   };
 
   return (
     <>
-      <h1 className="title">Pomodoro Clock</h1>
+      <h1 className='title'>Pomodoro Clock</h1>
 
-      <div className="container-break-session">
+      <div className='container-break-session'>
         <Clock
+          timerState={timerState}
           sessionType={timerState.sessionType}
-          typeSession={TYPE_SESSION}
           timeDisplay={timeDisplay(timeLeft)}
           handlePlayPause={handlePlayPause}
           handleReset={handleReset}
           audioAlarm={audioAlarm}
+          timeLeft={timeLeft}
         />
 
-        <div className="break-container">
-          <div id="break-label" className="label">
+        <div className='break-container'>
+          <div id='break-label' className='label'>
             Break Length
           </div>
           <ButtonUpDown
-            id="break-decrement"
+            id='break-decrement'
             handleLength={handleLength}
             params={{ time: timerState.breakTime, value: -1, type: TYPE_BREAK }}
             isUp={false}
           />
-          <span id="break-length">{timerState.breakTime}</span>
+          <span id='break-length'>{timerState.breakTime}</span>
           <ButtonUpDown
-            id="break-increment"
+            id='break-increment'
             handleLength={handleLength}
             params={{ time: timerState.breakTime, value: 1, type: TYPE_BREAK }}
             isUp={true}
           />
         </div>
 
-        <div className="session-container">
-          <div id="session-label" className="label">
+        <div className='session-container'>
+          <div id='session-label' className='label'>
             Session Length
           </div>
           <ButtonUpDown
-            id="session-decrement"
+            id='session-decrement'
             handleLength={handleLength}
             params={{
               time: timerState.sessionTime,
@@ -171,9 +174,9 @@ function App() {
             }}
             isUp={false}
           />
-          <span id="session-length">{timerState.sessionTime}</span>
+          <span id='session-length'>{timerState.sessionTime}</span>
           <ButtonUpDown
-            id="session-increment"
+            id='session-increment'
             handleLength={handleLength}
             params={{
               time: timerState.sessionTime,
@@ -185,7 +188,16 @@ function App() {
         </div>
       </div>
 
-      <a href="https://github.com/Adri-0311/pomodoro-clock" className="github"><i class="fa-brands fa-github"></i></a>
+      <p className='text-center'>
+        Original app:&nbsp;
+        <a href='https://25--5-clock.freecodecamp.rocks/' target='_balank'>
+          FCC : Random Quote Machine
+        </a>
+      </p>
+
+      <a href='https://github.com/Adri-0311/pomodoro-clock' className='github'>
+        <i className='fa-brands fa-github'></i>
+      </a>
     </>
   );
 }

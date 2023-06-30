@@ -2,11 +2,11 @@
 
 Install dependencies:
 
-### `npm i`
+### `npm i` or `pnpm i`
 
 In the project directory, you can run:
 
-### `npm run dev`
+### `npm run dev` or `pnpm dev`
 
 View and edit the proyect:
 
