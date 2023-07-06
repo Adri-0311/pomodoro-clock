@@ -1,6 +1,6 @@
+import './App.css';
 import { useEffect, useRef, useState } from 'react';
 import {
-  BREAK_TIME,
   SESSION_TIME,
   PAUSE,
   PLAY,
@@ -9,18 +9,20 @@ import {
 } from './constants/const';
 import ButtonUpDown from './components/ButtonUpDown.jsx';
 import Clock from './components/Clock.jsx';
-import './App.css';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  timerInit,
+  updateStatus,
+  updateSessionType,
+  updateSessionTime,
+  updateBreakTime,
+} from './app/timer/timerSlider';
 
 function App() {
-  const initState = {
-    status: PAUSE,
-    sessionType: TYPE_SESSION,
-    sessionTime: SESSION_TIME,
-    breakTime: BREAK_TIME,
-  };
-  const [timerState, setTimerState] = useState(initState);
+  const dispatch = useDispatch();
+  const timerState = useSelector((state) => state.timerState);
   const [timeLeft, setTimeLeft] = useState(SESSION_TIME * 60);
-  const [intervalId, setIntervalId] = useState();
+  const intervalId = useRef();
   const audioAlarm = useRef(null);
 
   /**
@@ -33,13 +35,10 @@ function App() {
     if (time > 0 && time < 61) {
       switch (values.type) {
         case TYPE_BREAK:
-          setTimerState({ ...timerState, breakTime: time });
+          dispatch(updateBreakTime({ breakTime: time }));
           break;
         case TYPE_SESSION:
-          setTimerState({
-            ...timerState,
-            sessionTime: time,
-          });
+          dispatch(updateSessionTime({ sessionTime: time }));
           setTimeLeft(time * 60);
           break;
       }
@@ -47,14 +46,14 @@ function App() {
   };
 
   const handleReset = () => {
-    if (intervalId) {
-      clearInterval(intervalId);
-      setTimerState(initState);
+    if (intervalId.current) {
+      clearInterval(intervalId.current);
+      dispatch(timerInit());
       setTimeLeft(SESSION_TIME * 60);
       audioAlarm.current.pause();
       audioAlarm.current.currentTime = 0;
     } else {
-      setTimerState(initState);
+      dispatch(timerInit());
       setTimeLeft(SESSION_TIME * 60);
     }
   };
@@ -65,22 +64,17 @@ function App() {
   const handlePlayPause = () => {
     if (timerState.status === PAUSE) {
       countDown();
-      setTimerState({
-        ...timerState,
-        status: PLAY,
-      });
+      dispatch(updateStatus({ status: PLAY }));
     } else {
-      clearInterval(intervalId);
-      setTimerState({ ...timerState, status: PAUSE });
+      clearInterval(intervalId.current);
+      dispatch(updateStatus({ status: PAUSE }));
     }
   };
 
   const countDown = () => {
-    setIntervalId(
-      setInterval(() => {
-        setTimeLeft((timeLeft) => timeLeft - 1);
-      }, 1000)
-    );
+    intervalId.current = setInterval(() => {
+      setTimeLeft((timeLeft) => timeLeft - 1);
+    }, 1000);
   };
 
   useEffect(() => {
@@ -96,34 +90,18 @@ function App() {
   };
 
   const changeSessionBreak = () => {
-    clearInterval(intervalId);
-    setTimerState({
-      ...timerState,
-      sessionType:
-        timerState.sessionType === TYPE_SESSION ? TYPE_BREAK : TYPE_SESSION,
-    });
+    clearInterval(intervalId.current);
+    dispatch(
+      updateSessionType({
+        sessionType:
+          timerState.sessionType === TYPE_SESSION ? TYPE_BREAK : TYPE_SESSION,
+      })
+    );
     setTimeLeft(
       timerState.sessionType === TYPE_SESSION
         ? timerState.breakTime * 60
         : timerState.sessionTime * 60
     );
-  };
-
-  /**
-   *
-   * @param {number} time
-   * @returns :string mm:ss
-   */
-  const timeDisplay = (time) => {
-    const date = new Date(0);
-    date.setSeconds(time);
-    let dateFormat = date.toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    });
-    dateFormat = dateFormat.split(':');
-    return dateFormat[0] === '02' ? '60:00' : dateFormat.slice(1).join(':');
   };
 
   return (
@@ -132,13 +110,10 @@ function App() {
 
       <div className='container-break-session'>
         <Clock
-          timerState={timerState}
-          sessionType={timerState.sessionType}
-          timeDisplay={timeDisplay(timeLeft)}
+          timeLeft={timeLeft}
           handlePlayPause={handlePlayPause}
           handleReset={handleReset}
           audioAlarm={audioAlarm}
-          timeLeft={timeLeft}
         />
 
         <div className='break-container'>

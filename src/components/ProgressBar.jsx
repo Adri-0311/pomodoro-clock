@@ -1,22 +1,21 @@
-import { TYPE_SESSION, TYPE_BREAK, PLAY } from '../constants/const';
 import '../css/ProgressBar.css';
+import { TYPE_SESSION, TYPE_BREAK, PLAY } from '../constants/const';
+import { useSelector } from 'react-redux';
 
-export default function ProgressBar({
-  timeLeft,
-  status,
-  sessionType,
-  sessionTime,
-  breakTime,
-}) {
+export default function ProgressBar({timeLeft}) {
+  const timerState = useSelector((store) => store.timerState);
   const percentOfTime =
-    sessionType === TYPE_SESSION
-      ? ((timeLeft / (sessionTime * 60)) * 100).toFixed(1)
-      : ((timeLeft / (breakTime * 60)) * 100).toFixed(1);
+    timerState.sessionType === TYPE_SESSION
+      ? ((timeLeft / (timerState.sessionTime * 60)) * 100).toFixed(1)
+      : ((timeLeft / (timerState.breakTime * 60)) * 100).toFixed(1);
 
   let color = 'text-bg-secondary';
-  if (status === PLAY && sessionType === TYPE_SESSION) {
+  if (timerState.status === PLAY && timerState.sessionType === TYPE_SESSION) {
     color = 'text-bg-success';
-  } else if (status === PLAY && sessionType === TYPE_BREAK) {
+  } else if (
+    timerState.status === PLAY &&
+    timerState.sessionType === TYPE_BREAK
+  ) {
     color = 'text-bg-danger';
   }
   return (

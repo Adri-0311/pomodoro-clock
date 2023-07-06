@@ -3,6 +3,7 @@
     border: solid 2px #635679;
     border-radius: 25px;
     min-width: 250px;
+    background-color: #ffffff08;
     box-shadow: rgba(99, 99, 99, 0.4) 0px 6px 12px 0px;
 }
 
@@ -15,7 +16,7 @@
     font-size: 2.5rem;
     font-weight: 900;
     font-family: 'VT323', monospace;
-    background-color: #635679;
+    background-color: #50377c;
     border-radius: 20px;
     margin: 1rem;
     box-shadow: rgba(99, 99, 99, 0.4) 0px 4px 8px 0px;
